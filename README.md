@@ -1,3 +1,7 @@
+# Inferring Cell-Type-Specific Co-Expressed Genes from Single Cell Data
+
+Shan, X., Zhao, H.: Inferring Cell-Type-Specific Co-Expressed Genes from Single Cell Data.
+
 ## Benchmark of simulation
 * Prepare the 10 dataset used for simulation: Benchmark_simu/prepare_data.R
 * Simulate IND data using scSimu(NB), scDesign2, SPsimSeq, ESCO: Benchmark_simu/simulate_ind.R
