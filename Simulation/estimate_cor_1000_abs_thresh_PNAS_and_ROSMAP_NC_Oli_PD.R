@@ -8,8 +8,8 @@ library(propr)
 library(parallel)
 set.seed(10222023)
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/CscoreSimplifiedIRLS.R")
+source("AFinal/cscore_real_data_function.R")
 
 
 # ROSMAP-------------------------------------------------------------------

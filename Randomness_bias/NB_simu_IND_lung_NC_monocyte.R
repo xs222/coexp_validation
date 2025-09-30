@@ -1,8 +1,12 @@
 
-# using NB to simulate IND PNAS and ROSMAP NC Oli
+# using NB to simulate IND PNAS and ROSMAP NC Ex
+# marginal fit is from /gpfs/gibbs/pi/zhao/xs282/validation/mean_cor/marginal_fit_PNAS_NC_Ex.R
+#                      /gpfs/gibbs/pi/zhao/xs282/validation/mean_cor/marginal_fit_ROSMAP_NC_Ex.R
+# kernel smoothing fit is from: /gpfs/gibbs/pi/zhao/xs282/validation/mean_cor/KS_fit_PNAS_and_ROSMAP_NC_Ex_11_12_2023.R
+# this is the corresponding ind simulation of /gpfs/gibbs/pi/zhao/xs282/validation/mean_cor/NB_simu_PNAS_and_ROSMAP_NC_Ex_11_13_2023.R
 
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("compare_simulation/NB_copula/NB_copula_function.R")
+source("AFinal/NB_copula_function.R")
 source("AFinal/CscoreSimplifiedIRLS.R")
 source("AFinal/cscore_real_data_function.R")
 source("AFinal/coexp_function.R")
@@ -35,8 +39,11 @@ i <- as.numeric(gsub("s","",prefix))
 seed <- 10212023+i
 
 set.seed(seed)
-count_ex <- readRDS(paste0("marginal_fit/",dname,"_NC_Oli_count.rds"))
-marginal_fit_fn <- paste0("marginal_fit/",dname,"_NC_Oli_PD_sparse_marginal_fit_simulated.rds")
+sc_obj = readRDS("/gpfs/gibbs/pi/zhao/xs282/lung_data/lung_nc_myeloid.rds")
+sc_obj <- subset(sc_obj, subset = Subclass_Cell_Identity=="Monocyte")
+
+count_ex <- as.matrix(sc_obj[["RNA"]]@counts)
+marginal_fit_fn <- paste0("revision/estimate_cor_lung/",dname,"_Monocyte_marginal_fit.rds")
 vanilla_ex <- readRDS(marginal_fit_fn)
 log10mu <- vanilla_ex$mu
 gene_name <- vanilla_ex$gene
@@ -48,7 +55,7 @@ cell_name <- colnames(count_ex)[cell_idx]
 seq_depth <- colSums(count_ex)[cell_idx]
 
 # use the sampled mean and the trend between mean and alpha to get corresponding alpha
-km_Ex5 <- readRDS(paste0('marginal_fit/',dname,'_NC_Oli_PD_sparse_ks_fit_5_simulated.rds'))
+km_Ex5 <- readRDS(paste0("revision/estimate_cor_lung/",dname,"_Monocyte_ks_fit_5.rds"))
 fitted_trend <- data.frame(mu=km_Ex5$x, alpha=km_Ex5$y)
 log10alpha <- rep(NA,nrow(vanilla_ex))
 names(log10alpha) <- vanilla_ex$gene
@@ -61,14 +68,13 @@ alpha <- 10^log10alpha
 simu_ROSMAP <- NB_copula(mu, gene_name, seq_depth, cell_name, alpha,
                          ind=T, seed=seed)
 rm(gene_name)
-if(!file.exists(paste0("mean_cor/semi_PD_sparse/simu/IND/", dname,"/"))){
-  dir.create(paste0("mean_cor/semi_PD_sparse/simu/IND/", dname,"/"),recursive = T)
+if(!file.exists(paste0("revision/estimate_cor_lung/simu_IND_Monocyte/"))){
+  dir.create(paste0("revision/estimate_cor_lung/simu_IND_Monocyte/"),recursive = T)
 }
-saveRDS(simu_ROSMAP, paste0("mean_cor/semi_PD_sparse/simu/IND/", dname,"/simu_", prefix, ".rds"))
+saveRDS(simu_ROSMAP, paste0("revision/estimate_cor_lung/simu_IND_Monocyte/simu_", prefix, ".rds"))
 
 ### estimate correlation --------------------------------------------------------
-ori_ests <- readRDS("mean_cor/semi_PD/simu/ROSMAP_NC_Oli_sct1000.rds")
-cor_gene_name <- colnames(ori_ests)
+cor_gene_name <- readRDS("revision/estimate_cor_lung/lung_NC_mono_cor_gene.rds")
 
 extract_upp_tri <- function(data, gene_name){
   data <- data[gene_name, gene_name]
@@ -85,7 +91,7 @@ ROSMAP_sct_prn <- sct_cor(sc_obj, sc.sel, cor_gene_name)
 est_mat_ROSMAP$sct <- extract_upp_tri(ROSMAP_sct_prn, cor_gene_name)
 
 # noise regularization
-path2 <- paste0("mean_cor/semi_PD_sparse/simu/IND/",dname,"/",prefix,"/")
+path2 <- paste0("revision/estimate_cor_lung/simu_IND_Monocyte/noise/",prefix,"/")
 if(!file.exists(path2)){
   dir.create(path2,recursive = T)
 }
@@ -120,7 +126,7 @@ est_mat_ROSMAP$prn <- extract_upp_tri(cor_m_pearson, cor_gene_name)
 cor_m_spr <- cor(t(norm.data),method = "spearman")
 est_mat_ROSMAP$spr <- extract_upp_tri(cor_m_spr, cor_gene_name)
 
-saveRDS(est_mat_ROSMAP, paste0("mean_cor/semi_PD_sparse/simu/IND/", dname,"/est_cor_", prefix, ".rds"))
+saveRDS(est_mat_ROSMAP, paste0("revision/estimate_cor_lung/simu_IND_Monocyte/est_cor_", prefix, ".rds"))
 
 
 

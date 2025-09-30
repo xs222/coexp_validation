@@ -13,7 +13,7 @@ library(tidyverse)
 library(grid)
 set.seed(11272023)
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/cscore_real_data_function.R")
 
 # read expression data file
 marginal_fit_ROSMAP = readRDS('marginal_fit/ROSMAP_NC_Oli_marginal_fit.rds')

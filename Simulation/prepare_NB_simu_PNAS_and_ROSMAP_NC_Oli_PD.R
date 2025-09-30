@@ -33,7 +33,7 @@ gene_name <- marginal_join$gene[1:ngene]
 set.seed(11122023)
 dim(count_ROSMAP_oli)
 
-source("/gpfs/gibbs/pi/zhao/xs282/validation/coexp_function.R")
+source("AFinal/coexp_function.R")
 sc_obj <- CreateSeuratObject(counts = count_ROSMAP_oli)
 sc_obj <- NormalizeData(sc_obj, normalization.method = "LogNormalize", scale.factor = 10000)
 sc.sel <- subset(sc_obj, features = gene_name)

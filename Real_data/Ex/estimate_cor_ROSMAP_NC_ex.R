@@ -8,10 +8,10 @@ library(parallel)
 library(propr)
 set.seed(10222023)
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("compare_simulation/NB_copula/NB_copula_function.R")
-source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/coexp_function.R")
+source("AFinal/NB_copula_function.R")
+source("AFinal/CscoreSimplifiedIRLS.R")
+source("AFinal/cscore_real_data_function.R")
+source("AFinal/coexp_function.R")
 seed <- 10222023
 
 # ROSMAP-------------------------------------------------------------------

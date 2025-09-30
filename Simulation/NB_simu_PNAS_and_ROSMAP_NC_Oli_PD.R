@@ -2,9 +2,9 @@
 # using NB copula to simulate PNAS and ROSMAP NC Oli
 
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("compare_simulation/NB_copula/NB_copula_function.R")
-source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/NB_copula_function.R")
+source("AFinal/CscoreSimplifiedIRLS.R")
+source("AFinal/cscore_real_data_function.R")
 
 library(pheatmap)
 library(Seurat)

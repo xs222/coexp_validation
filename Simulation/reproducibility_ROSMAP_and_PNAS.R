@@ -6,10 +6,9 @@ library(reshape2)
 library(dplyr)
 library(tidyverse)
 library(ggpubr)
-library(ggpattern)
 library(cowplot)
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/cscore_real_data_function.R")
 
 ROSMAP_oli_ct <- readRDS("mean_cor/semi_PD_sparse/simu/ROSMAP_NC_Oli_sct_cor_NB_simu1000_abs_thresh.rds")
 PNAS_oli_ct <- readRDS("mean_cor/semi_PD_sparse/simu/PNAS_NC_Oli_sct_cor_NB_simu1000_abs_thresh.rds")
@@ -107,20 +106,6 @@ colnames(ROSMAP_p)
 
 
 # based on p-value--------------------------------------------------------------
-count_mat <- matrix(NA, nrow=2, ncol = 8)
-colnames(count_mat) <- colnames(ROSMAP_p_adj)
-rownames(count_mat) <- c("ROSMAP", "PNAS")
-count_mat[1,] <- apply(ROSMAP_p_adj, 2, function(x){sum(x<0.3)})
-count_mat[2,] <- apply(PNAS_p_adj, 2, function(x){sum(x<0.3)})
-knitr::kable(count_mat)
-
-count_mat <- matrix(NA, nrow=2, ncol = 8)
-colnames(count_mat) <- colnames(ROSMAP_p_adj)
-rownames(count_mat) <- c("ROSMAP", "PNAS")
-count_mat[1,] <- apply(ROSMAP_p_adj, 2, function(x){sum(x<0.01)})
-count_mat[2,] <- apply(PNAS_p_adj, 2, function(x){sum(x<0.01)})
-knitr::kable(count_mat)
-
 p_cutoff <- c(0.001, 0.005, 0.01, 0.05, 0.1)
 total_cor_PNAS <- matrix(NA, nrow=8, ncol=length(p_cutoff))
 rownames(total_cor_PNAS) <- colnames(ROSMAP_p_adj)
@@ -187,16 +172,16 @@ color_setting <- c("CS-CORE \n(Empirical)"="brown", "Noise \nRegularization"="#A
                    "Pearson"="#F28522", "Spearman"="#ffff66","Analytic PR"="#99ccff",
                    "propr"="#3366cc")
 
-p_prec_repduc_p <- ggplot(repduc_prec_overlap_p, aes(x=Reproduce, y=ROSMAP, color=Method))+
+p_prec_repduc_p <- ggplot(repduc_prec_overlap_p[repduc_prec_overlap_p$Method!="CS-CORE",], aes(x=Reproduce, y=ROSMAP, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0.2,1))+theme_bw()+
   # geom_errorbar(aes(ymin = min, ymax = max),width=500)+
   scale_colour_manual(values = color_setting)+
-  labs(title="P-value", x="# of reproducible pairs", y="Precision", shape="P-value cutoff")+
+  labs(x="# of reproducible pairs", y="Precision", shape="P-value cutoff")+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 p_prec_repduc_p
 
-p_prec_repduc_p_pnas <- ggplot(repduc_prec_overlap_p, aes(x=Reproduce, y=PNAS, color=Method))+
+p_prec_repduc_p_pnas <- ggplot(repduc_prec_overlap_p[repduc_prec_overlap_p$Method!="CS-CORE",], aes(x=Reproduce, y=PNAS, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0.2,1))+theme_bw()+
   # geom_errorbar(aes(ymin = min, ymax = max),width=500)+
   scale_colour_manual(values = color_setting)+
@@ -211,10 +196,10 @@ inflation_p$Var1 <- recode(inflation_p$Var1,
                            sct="sctransform", prn="Pearson", spr="Spearman",
                            propr="propr",ana_prn="Analytic PR",cscore_p="CS-CORE",
                            noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
-reproduc_infla_p <- ggplot(inflation_p, aes(x=Var2, y=Freq, color=Var1, group=Var1))+
+reproduc_infla_p <- ggplot(inflation_p[inflation_p$Var1!="CS-CORE",], aes(x=Var2, y=Freq, color=Var1, group=Var1))+
   geom_point()+geom_line(size=1)+
   labs(y="Misidentified reproducible pairs" , #y="Inflation",
-       x="P-value cutoffs", color="Method", title="P-value")+
+       x="P-value cutoffs", color="Method")+
   theme_bw()+scale_color_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
@@ -239,9 +224,9 @@ inflation_p2$Var1 <- factor(inflation_p2$Var1, levels = unique(inflation_p1_sub$
 
 
 reproduc_count_p <- ggplot()+
-  geom_bar(data=inflation_p1, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_p1[inflation_p1$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of reproducible pairs", x="P-value cutoffs", fill="Method", title="P-value")+
+  labs(y="# of reproducible pairs", x="P-value cutoffs", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
@@ -249,16 +234,14 @@ reproduc_count_p <- ggplot()+
 reproduc_count_p
 
 reproduc_count_true_p <- ggplot()+
-  geom_bar(data=inflation_p2, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_p2[inflation_p2$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of true reproducible pairs", x="P-value cutoffs", fill="Method", title="P-value")+
+  labs(y="# of true reproducible pairs", x="P-value cutoffs", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 reproduc_count_true_p
-
-reproduc_count_p+reproduc_count_true_p
 
 
 
@@ -311,19 +294,19 @@ repduc_prec_overlap <- left_join(repduc_prec_overlap, repduc_top_long, by=c("Met
 repduc_prec_overlap$Method <- recode(repduc_prec_overlap$Method,
                             sct="sctransform", prn="Pearson", spr="Spearman",
                             propr="propr",ana_prn="Analytic PR",
-                            noise="Noise \nRegularization", cscore_est="CS-CORE")
+                            noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 # shape_setting2 <- 1:length(top_cutoff)
 # names(shape_setting2) <- top_cutoff
 
-p_prec_repduc_unfil <- ggplot(repduc_prec_overlap, aes(x=Reproduce, y=ROSMAP, color=Method))+
+p_prec_repduc_unfil <- ggplot(repduc_prec_overlap[repduc_prec_overlap$Method!="CS-CORE",], aes(x=Reproduce, y=ROSMAP, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0.2,1))+theme_bw()+
   scale_colour_manual(values = color_setting)+
-  labs(title="Correlation strength", x="# of reproducible pairs", y="Precision")+
+  labs(x="# of reproducible pairs", y="Precision")+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 p_prec_repduc_unfil
 
-p_prec_repduc_unfil_pnas <- ggplot(repduc_prec_overlap, aes(x=Reproduce, y=PNAS, color=Method))+
+p_prec_repduc_unfil_pnas <- ggplot(repduc_prec_overlap[repduc_prec_overlap$Method!="CS-CORE",], aes(x=Reproduce, y=PNAS, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0,1))+theme_bw()+
   scale_colour_manual(values = color_setting)+
   labs(title="Correlation strength", x="# of reproducible pairs", y="Precision", shape="Top")+
@@ -335,11 +318,11 @@ inflation_unfil_top <- as.data.frame(as.table((repduc_top-repduc_truth_top)/repd
 inflation_unfil_top$Var1 <- recode(inflation_unfil_top$Var1,
                            sct="sctransform", prn="Pearson", spr="Spearman",
                            propr="propr",ana_prn="Analytic PR",
-                           noise="Noise \nRegularization", cscore_est="CS-CORE")
-reproduc_infla_unfil <- ggplot(inflation_unfil_top, aes(x=Var2, y=Freq, color=Var1, group=Var1))+
+                           noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
+reproduc_infla_unfil <- ggplot(inflation_unfil_top[inflation_unfil_top$Var1!="CS-CORE",], aes(x=Var2, y=Freq, color=Var1, group=Var1))+
   geom_point()+geom_line(size=1)+
   labs(y="Misidentified reproducible pairs", #y="Inflation",
-       x="Top", color="Method", title="Correlation strength")+
+       x="Top", color="Method")+
   theme_bw()+scale_color_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
@@ -353,19 +336,19 @@ inflation_unfil_top2$group <- "True reproducible pairs"
 inflation_unfil_top1$Var1 <- recode(inflation_unfil_top1$Var1,
                             sct="sctransform", prn="Pearson", spr="Spearman",
                             propr="propr",ana_prn="Analytic PR",
-                            noise="Noise \nRegularization", cscore_est="CS-CORE")
+                            noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 inflation_unfil_top2$Var1 <- recode(inflation_unfil_top2$Var1,
                             sct="sctransform", prn="Pearson", spr="Spearman",
                             propr="propr",ana_prn="Analytic PR",
-                            noise="Noise \nRegularization", cscore_est="CS-CORE")
+                            noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 inflation_unfil_top1_sub <- inflation_unfil_top1[inflation_unfil_top1$Var2==max(top_cutoff),] %>% arrange(desc(Freq))
 inflation_unfil_top1$Var1 <- factor(inflation_unfil_top1$Var1, levels = unique(inflation_unfil_top1_sub$Var1))
 inflation_unfil_top2$Var1 <- factor(inflation_unfil_top2$Var1, levels = unique(inflation_unfil_top1_sub$Var1))
 
 reproduc_count_unfil <- ggplot()+
-  geom_bar(data=inflation_unfil_top1, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_unfil_top1[inflation_unfil_top1$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of reproducible pairs", x="Top", fill="Method", title="Correlation strength")+
+  labs(y="# of reproducible pairs", x="Top", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
@@ -373,27 +356,54 @@ reproduc_count_unfil <- ggplot()+
 reproduc_count_unfil
 
 reproduc_count_true_unfil <- ggplot()+
-  geom_bar(data=inflation_unfil_top2, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_unfil_top2[inflation_unfil_top2$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of true reproducible pairs", x="Top", fill="Method", title="Correlation strength")+
+  labs(y="# of true reproducible pairs", x="Top", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 reproduc_count_true_unfil
-reproduc_count_unfil+reproduc_count_true_unfil
 
 format_supp <- theme(text = element_text(size = 14),
                      legend.position="none")
-plot_rep_ori <- ggarrange(reproduc_count_unfil+format_supp, p_prec_repduc_unfil+format_supp,
-                          reproduc_count_true_unfil+format_supp,
-                          reproduc_infla_unfil+format_supp+ylim(0,1)+labs(y="Prop of misidentified pairs"),
-                          reproduc_count_p+format_supp,p_prec_repduc_p+format_supp,
-                          reproduc_count_true_p+format_supp,
-                          reproduc_infla_p+format_supp+ylim(0,1)+labs(y="Prop of misidentified pairs"), ncol=4,nrow=2,
-                          widths = c(1, 0.9, 1, 0.9),
-          labels = c("A", "B", "C", "D", "E", "F", "G", "H"))
-leg <- get_legend(reproduc_count_p+
+# plot_rep_ori <- ggarrange(reproduc_count_unfil+format_supp, p_prec_repduc_unfil+format_supp,
+#                           reproduc_count_true_unfil+format_supp,
+#                           reproduc_infla_unfil+format_supp+ylim(0,1)+labs(y="Prop of misidentified pairs"),
+#                           reproduc_count_p+format_supp,p_prec_repduc_p+format_supp,
+#                           reproduc_count_true_p+format_supp,
+#                           reproduc_infla_p+format_supp+ylim(0,1)+labs(y="Prop of misidentified pairs"), ncol=4,nrow=2,
+#                           widths = c(1, 0.9, 1, 0.9),
+#           labels = c("A", "B", "C", "D", "E", "F", "G", "H"))
+# leg <- get_legend(reproduc_count_p+
+#                     scale_fill_manual(values = color_setting,
+#                                        breaks = sort(names(color_setting)),
+#                                        labels = c("Analytic PR", "CS-CORE", "CS-CORE (Empirical)", "Noise Regularization",
+#                                                   "Pearson", "propr", "sctransform", "Spearman"))+
+#                     theme(legend.position = "bottom",
+#                            text = element_text(size = 17),
+#                            legend.spacing.x = unit(0.5, 'cm'))+
+#                     guides(fill=guide_legend(nrow=2,byrow=TRUE)))
+plot_rep_ori1 <- ggarrange(reproduc_count_unfil+format_supp+labs(y="# of reproducible \npairs"), 
+                           p_prec_repduc_unfil+format_supp,
+                          reproduc_count_true_unfil+format_supp+labs(y="# of true \nreproducible pairs"),
+                          reproduc_infla_unfil+format_supp+ylim(0,1)+labs(y="Prop of \nmisidentified pairs"), ncol=4,nrow=1,
+                          widths = c(1, 0.9, 1, 1),
+          labels = c("A", "B", "C", "D"))
+fig1 = annotate_figure(ggarrange(plot_rep_ori1, ncol=1, nrow=1),
+  top = text_grob("Correlation strength", 
+                  color = "black", face = "bold", size = 16))
+
+plot_rep_ori2 <- ggarrange(reproduc_count_p+format_supp+labs(y="# of reproducible \npairs"),p_prec_repduc_p+format_supp,
+                          reproduc_count_true_p+format_supp+labs(y="# of true \nreproducible pairs"),
+                          reproduc_infla_p+format_supp+ylim(0,1)+labs(y="Prop of \nmisidentified pairs"), ncol=4,nrow=1,
+                          widths = c(1, 0.9, 1, 1),
+          labels = c("E", "F", "G", "H"))
+fig2 = annotate_figure(ggarrange(plot_rep_ori2, ncol=1, nrow=1),
+  top = text_grob("---------------------------------------------------------------------------------------------------\nP value", 
+                  color = "black", face = "bold", size = 16))
+
+p_with_legend = reproduc_count_p+
                     scale_fill_manual(values = color_setting,
                                        breaks = sort(names(color_setting)),
                                        labels = c("Analytic PR", "CS-CORE", "CS-CORE (Empirical)", "Noise Regularization",
@@ -401,22 +411,12 @@ leg <- get_legend(reproduc_count_p+
                     theme(legend.position = "bottom",
                            text = element_text(size = 17),
                            legend.spacing.x = unit(0.5, 'cm'))+
-                    guides(fill=guide_legend(nrow=2,byrow=TRUE)))
-
-
-pdf('mean_cor/semi_PD_sparse/figures/reproduc_v2.pdf', width = 12, height = 7.5, onefile = T)
-ggarrange(plot_rep_ori, leg, ncol=1, nrow=2, heights = c(10,1))
-dev.off()
-
-plot_string_ori <- ggarrange(string_count_unfil+format_supp, p_prec_string_unfil+format_supp,
-                             string_count_true_unfil+format_supp,
-                             string_infla_unfil+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"),
-                             string_count_p+format_supp,p_prec_string_p+format_supp,
-                             string_count_true_p+format_supp,
-                             string_infla_p+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"), ncol=4,nrow=2,
-                             widths = c(1, 0.95, 1, 0.95),labels = c("A", "B", "C", "D", "E", "F", "G", "H"))
-pdf('mean_cor/semi_PD_sparse/figures/string_v2.pdf', width = 12, height = 8, onefile = T)
-ggarrange(plot_string_ori, leg, ncol=1, nrow=2, heights = c(10,1))
+                    guides(fill=guide_legend(nrow=2,byrow=TRUE))
+g <- ggplotGrob(p_with_legend)
+legend_index <- which(sapply(g$grobs, function(x) x$name) == "guide-box")
+leg <- g$grobs[[legend_index]]
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/reproduc_v2_new.pdf', width = 12, height = 7, onefile = T)
+ggarrange(fig1, fig2, leg, ncol=1, nrow=3, heights = c(5,5.1,1))
 dev.off()
 
 
@@ -424,30 +424,158 @@ dev.off()
 leg <- get_legend(reproduc_infla_p+theme(legend.position = "right",
                                          text = element_text(size = 17),
                                          legend.spacing.x = unit(0.5, 'cm')))
-pdf('mean_cor/semi_PD_sparse/figures/prec_pnas_v2.pdf', width = 12, height = 3, onefile = T)
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/prec_pnas_v2_new.pdf', width = 12, height = 3, onefile = T)
 ggarrange(NULL, ggarrange(p_prec_repduc_unfil_pnas+format_supp+labs(y="Precision (PNAS)"),
                     p_prec_repduc_p_pnas+format_supp+labs(y="Precision (PNAS)"), ncol=2, nrow = 1, labels = c("A", "B")),
           leg, NULL, ncol=4, nrow=1, widths = c(1.5,5,2,1))
 dev.off()
+                             
+                             
+# cscore part
+format_supp <- theme(text = element_text(size = 14),
+                     legend.position="none")
+repduc_prec_overlap_p_sub = repduc_prec_overlap_p[repduc_prec_overlap_p$Method=="CS-CORE",]
+scaling_factor_overlap_p <- max(repduc_prec_overlap_p_sub$Reproduce) 
+p_repduc_prec_overlap_p_cscore = ggplot(repduc_prec_overlap_p_sub, aes(x = as.factor(Top), group = 1)) +
+  geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = ROSMAP * scaling_factor_overlap_p), color = "darkred", size = 1.5) +
+  geom_point(aes(y = ROSMAP * scaling_factor_overlap_p), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_overlap_p, name = "Precision")) +
+  labs(title = "P-value",x = "P-value cutoffs") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_repduc_prec_overlap_p_cscore
+
+inflation_p_cscore = inflation_p
+colnames(inflation_p_cscore)[3] = "infla"
+inflation_p_cscore = left_join(inflation_p_cscore, inflation_p2, by=c("Var1", "Var2"))
+inflation_p_cscore = inflation_p_cscore[inflation_p_cscore$Var1=="CS-CORE",]
+scaling_factor_infla_p <- max(inflation_p_cscore$Freq) 
+
+p_infla_p_cscore = ggplot(inflation_p_cscore, aes(x = Var2, group = 1)) +
+  geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = infla * scaling_factor_infla_p), color = "darkred", size = 1.5) +
+  geom_point(aes(y = infla * scaling_factor_infla_p), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of true reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_infla_p, name = "Prop of misidentified pairs")) +
+  labs(title = "P-value",x = "P-value cutoffs") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_infla_p_cscore
+
+repduc_prec_overlap_sub = repduc_prec_overlap[repduc_prec_overlap$Method=="CS-CORE \n(Empirical)",]
+scaling_factor_overlap <- max(repduc_prec_overlap_sub$Reproduce) 
+p_repduc_prec_overlap_cscore = ggplot(repduc_prec_overlap_sub, aes(x = as.factor(Top), group = 1)) +
+  geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = ROSMAP * scaling_factor_overlap), color = "darkred", size = 1.5) +
+  geom_point(aes(y = ROSMAP * scaling_factor_overlap), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_overlap, name = "Precision")) +
+  labs(title = "Correlation strength",x = "Top") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_repduc_prec_overlap_cscore
+
+inflation_cscore = inflation_unfil_top
+colnames(inflation_cscore)[3] = "infla"
+inflation_cscore = left_join(inflation_cscore, inflation_unfil_top2, by=c("Var1", "Var2"))
+inflation_cscore = inflation_cscore[inflation_cscore$Var1=="CS-CORE \n(Empirical)",]
+scaling_factor_infla <- max(inflation_cscore$Freq) 
+
+p_infla_cscore = ggplot(inflation_cscore, aes(x = Var2, group = 1)) +
+  geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = infla * scaling_factor_infla), color = "darkred", size = 1.5) +
+  geom_point(aes(y = infla * scaling_factor_infla), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of true reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_infla, name = "Prop of misidentified pairs")) +
+  labs(title = "Correlation strength",x = "Top") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_infla_cscore
+
+# supp part
+repduc_prec_overlap_p_sub = repduc_prec_overlap_p[repduc_prec_overlap_p$Method=="CS-CORE",]
+scaling_factor_overlap_p <- max(repduc_prec_overlap_p_sub$Reproduce) 
+p_repduc_prec_overlap_p_cscore_PNAS = ggplot(repduc_prec_overlap_p_sub, aes(x = as.factor(Top), group = 1)) +
+  geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = PNAS * scaling_factor_overlap_p), color = "darkred", size = 1.5) +
+  geom_point(aes(y = PNAS * scaling_factor_overlap_p), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_overlap_p, name = "Precision (PNAS)")) +
+  labs(title = "P-value",x = "P-value cutoffs") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_repduc_prec_overlap_p_cscore_PNAS
+
+repduc_prec_overlap_sub = repduc_prec_overlap[repduc_prec_overlap$Method=="CS-CORE \n(Empirical)",]
+scaling_factor_overlap <- max(repduc_prec_overlap_sub$Reproduce) 
+p_repduc_prec_overlap_cscore_PNAS = ggplot(repduc_prec_overlap_sub, aes(x = as.factor(Top), group = 1)) +
+  geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
+  geom_line(aes(y = PNAS * scaling_factor_overlap), color = "darkred", size = 1.5) +
+  geom_point(aes(y = PNAS * scaling_factor_overlap), color = "darkred", size = 3) +
+  scale_y_continuous(name = "# of reproducible pairs",
+    sec.axis = sec_axis(trans = ~ . / scaling_factor_overlap, name = "Precision (PNAS)")) +
+  labs(title = "Correlation strength",x = "Top") + theme_bw() +
+  theme(
+    axis.title.y.left = element_text(color = "darkblue"),
+    axis.text.y.left = element_text(color = "darkblue"),
+    axis.title.y.right = element_text(color = "darkred"),
+    axis.text.y.right = element_text(color = "darkred"),
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )+format_supp
+p_repduc_prec_overlap_cscore_PNAS         
+
+
+saveRDS(list(p_repduc_prec_overlap_p_cscore_PNAS, p_repduc_prec_overlap_cscore_PNAS),
+       "/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/reproduce_PNAS_cscore.rds")
+
+# plot_string_ori <- ggarrange(string_count_unfil+format_supp, p_prec_string_unfil+format_supp,
+#                              string_count_true_unfil+format_supp,
+#                              string_infla_unfil+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"),
+#                              string_count_p+format_supp,p_prec_string_p+format_supp,
+#                              string_count_true_p+format_supp,
+#                              string_infla_p+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"), ncol=4,nrow=2,
+#                              widths = c(1, 0.95, 1, 0.95),labels = c("A", "B", "C", "D", "E", "F", "G", "H"))
+# pdf('mean_cor/semi_PD_sparse/figures/string_v2.pdf', width = 12, height = 8, onefile = T)
+# ggarrange(plot_string_ori, leg, ncol=1, nrow=2, heights = c(10,1))
+# dev.off()
 
 
 
 # fixed mis prop --------------------------------------------------------------
 # based on p-value--------------------------------------------------------------
-count_mat <- matrix(NA, nrow=2, ncol = 8)
-colnames(count_mat) <- colnames(ROSMAP_p_adj)
-rownames(count_mat) <- c("ROSMAP", "PNAS")
-count_mat[1,] <- apply(ROSMAP_p_adj, 2, function(x){sum(x<0.3)})
-count_mat[2,] <- apply(PNAS_p_adj, 2, function(x){sum(x<0.3)})
-knitr::kable(count_mat)
-
-count_mat <- matrix(NA, nrow=2, ncol = 8)
-colnames(count_mat) <- colnames(ROSMAP_p_adj)
-rownames(count_mat) <- c("ROSMAP", "PNAS")
-count_mat[1,] <- apply(ROSMAP_p_adj, 2, function(x){sum(x<0.01)})
-count_mat[2,] <- apply(PNAS_p_adj, 2, function(x){sum(x<0.01)})
-knitr::kable(count_mat)
-
 p_cutoff <- c(0.001, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 total_cor_PNAS <- matrix(NA, nrow=8, ncol=length(p_cutoff))
 rownames(total_cor_PNAS) <- colnames(ROSMAP_p_adj)
@@ -581,9 +709,13 @@ repro_p_ls[["Analytic PR"]] <- repro_p_ls[["Analytic PR"]]+xlim(0,0.175)
 ggarrange(plotlist = repro_p_ls, nrow=2, ncol=4, common.legend = T, legend = "bottom")
 
 plots <- repro_p_ls
-legend <- get_legend(plots[[1]]+theme(text = element_text(size = 17)))
-adjusted_theme <- theme(legend.position = "none",text = element_text(size = 15),
-                        plot.title = element_text(hjust=0.5),
+p_with_legend2 = plots[[1]]+theme(text = element_text(size = 17))
+g2 <- ggplotGrob(p_with_legend2)
+legend_index2 <- which(sapply(g2$grobs, function(x) x$name) == "guide-box")
+legend <- g2$grobs[[legend_index2]]
+                              
+adjusted_theme <- theme(legend.position = "none",text = element_text(size = 14),
+                        plot.title = element_text(size=14, hjust=0.5),
                         axis.text.x = element_text(angle = 45, hjust = 1),
                         plot.tag = element_text(size = 14, face = "bold", vjust = 1.3, hjust = -1.5),
                         plot.tag.position = c(0,1),
@@ -591,19 +723,19 @@ adjusted_theme <- theme(legend.position = "none",text = element_text(size = 15),
 
 plot_grid <- plot_grid(
   plots[[6]] + adjusted_theme +labs(tag="A"),
-  plots[[8]] +adjusted_theme+labs(tag="B"),
-  plots[[5]] + adjusted_theme+labs(tag="C"),
-  plots[[7]] + adjusted_theme+labs(tag="D"),
-  plots[[2]] + adjusted_theme+labs(tag="E"),
-  plots[[4]] + adjusted_theme+labs(tag="F"),
-  plots[[1]] + adjusted_theme+labs(tag="G"),
-  plots[[3]] + adjusted_theme+labs(tag="H"),
-  ncol = 4, nrow = 2, align = "hv"
+  # plots[[8]] +adjusted_theme+labs(tag="B"),
+  plots[[5]] + adjusted_theme+labs(tag="B"),
+  plots[[7]] + adjusted_theme+labs(tag="C"),
+  plots[[2]] + adjusted_theme+labs(tag="D"),
+  plots[[4]] + adjusted_theme+labs(tag="E"),
+  plots[[1]] + adjusted_theme+labs(tag="F"),
+  plots[[3]] + adjusted_theme+labs(tag="G"),
+  ncol = 7, nrow = 1, align = "hv"
 )
 
 final_plot_with_labels <- ggdraw() +
-  draw_plot(plot_grid, 0.02, 0.09, 0.98, 0.9, hjust = 0) +
-  draw_label("Prop of misidentified reproducible pairs", x = 0.51, y = 0.08, vjust = -0.5, angle = 0, size = 15) +
+  draw_plot(plot_grid, 0.02, 0.14, 0.98, 0.8, hjust = 0) +
+  draw_label("Prop of misidentified reproducible pairs", x = 0.51, y = 0.11, vjust = -0.5, angle = 0, size = 15) +
   draw_label("# of true reproducible pairs", x = 0, y = 0.55, vjust = 1.5, angle = 90, size = 15) +
   draw_plot(legend, 0, 0, 1, 0.1)
 
@@ -611,6 +743,32 @@ final_plot_with_labels <- ggdraw() +
 # Print the final plot
 print(final_plot_with_labels)
 
-pdf('mean_cor/semi_PD_sparse/figures/compare_reproduc_v2.pdf', width = 11, height = 7, onefile = T)
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/compare_reproduc_v2_new.pdf', width = 13, height = 3, onefile = T)
 print(final_plot_with_labels)
 dev.off()
+
+i = "CS-CORE"
+plot_dat1 <- inflation_p[inflation_p$Method==i,]
+plot_dat1$group <- "P-value"
+plot_dat2 <- inflation_unfil_top[inflation_unfil_top$Method==i,]
+plot_dat2$group <- "Cor-strength"
+plot_dat <- rbind(plot_dat1, plot_dat2)
+fix_mis_cscore <- ggplot(plot_dat, aes(x=Mis, y=true, color=group))+
+    geom_point(size=2)+geom_line(size=1)+labs( x="Prop of \nmisidentified pairs",
+                                  y="# of true reproducible pairs", color="")+
+    theme_bw()+
+    # scale_colour_manual(values = c("P-value"="darkblue", "Cor-strength"="darkred"))+
+    guides(color = guide_legend(nrow = 2)) +
+    theme(text = element_text(size = 14),
+         plot.title = element_text(hjust=0.5), axis.text.x = element_text(angle = 45, hjust = 1),
+        #  legend.position = c(0.98,1.1),
+        # legend.justification = c("right", "top"),
+        # legend.background = element_blank()
+         legend.position = "top", legend.box.margin = margin(b = -10))
+fix_mis_cscore
+
+saveRDS(list(p_repduc_prec_overlap_cscore, p_repduc_prec_overlap_p_cscore,
+             p_infla_cscore, p_infla_p_cscore, fix_mis_cscore),
+       "/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/reproduce_cscore.rds")
+
+

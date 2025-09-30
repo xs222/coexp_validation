@@ -3,7 +3,6 @@ library(tidyverse)
 library(magrittr)
 library(rtracklayer)
 library(biomaRt)
-library(ggvenn)
 library(ggplot2)
 library(igraph)
 library(venn)
@@ -14,7 +13,7 @@ library(matrixcalc)
 
 set.seed(11272023)
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/cscore_real_data_function.R")
 
 # prepare biological network----------------------------------------------------
 # Reactome
@@ -211,13 +210,13 @@ overlap_prec_overlap$Group <- "Original"
 overlap_prec_overlap$Method <- recode(overlap_prec_overlap$Method,
                                            sct="sctransform", prn="Pearson", spr="Spearman",
                                            propr="propr",ana_prn="Analytic PR",
-                                           noise="Noise \nRegularization", cscore_est="CS-CORE")
+                                           noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 
 p_prec_string_unfil <- ggplot(overlap_prec_overlap, aes(x=Overlap, y=Precision, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0.2,1))+theme_bw()+
   # scale_shape_manual(values=shape_setting)+
   scale_colour_manual(values = color_setting)+
-  labs(title="Correlation strength", x="Overlaps with Reactome", y="Precision", shape="Top")+
+  labs(x="Overlaps with Reactome", y="Precision", shape="Top")+
   theme(plot.title = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 p_prec_string_unfil
@@ -227,11 +226,10 @@ inflation_unfil_top <- as.data.frame(as.table((overlap_string-overlap_true)/over
 inflation_unfil_top$Var1 <- recode(inflation_unfil_top$Var1,
                                       sct="sctransform", prn="Pearson", spr="Spearman",
                                       propr="propr",ana_prn="Analytic PR",
-                                      noise="Noise \nRegularization", cscore_est="CS-CORE")
+                                      noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 string_infla_unfil <- ggplot(inflation_unfil_top, aes(x=Var2, y=Freq, color=Var1, group=Var1))+
   geom_point()+geom_line(size=1)+
-  labs(y="Prop of misidentified overlaps", x="Top", color="Method",
-       title="Correlation strength")+
+  labs(y="Prop of misidentified overlaps", x="Top", color="Method")+
   theme_bw()+scale_color_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),plot.subtitle = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
@@ -244,11 +242,11 @@ inflation_unfil_top2$group <- "True overlaps"
 inflation_unfil_top1$Var1 <- recode(inflation_unfil_top1$Var1,
                                     sct="sctransform", prn="Pearson", spr="Spearman",
                                     propr="propr",ana_prn="Analytic PR",
-                                    noise="Noise \nRegularization", cscore_est="CS-CORE")
+                                    noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 inflation_unfil_top2$Var1 <- recode(inflation_unfil_top2$Var1,
                                     sct="sctransform", prn="Pearson", spr="Spearman",
                                     propr="propr",ana_prn="Analytic PR",
-                                    noise="Noise \nRegularization", cscore_est="CS-CORE")
+                                    noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
 inflation_unfil_top1_sub <- inflation_unfil_top1[inflation_unfil_top1$Var2==max(top_cutoff),] %>% arrange(desc(Freq))
 inflation_unfil_top1$Var1 <- factor(inflation_unfil_top1$Var1, levels = unique(inflation_unfil_top1_sub$Var1))
 inflation_unfil_top2$Var1 <- factor(inflation_unfil_top2$Var1, levels = unique(inflation_unfil_top1_sub$Var1))
@@ -256,7 +254,7 @@ inflation_unfil_top2$Var1 <- factor(inflation_unfil_top2$Var1, levels = unique(i
 string_count_unfil <- ggplot()+
   geom_bar(data=inflation_unfil_top1, mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of overlaps with Reactome", x="Top", fill="Method", title="Correlation strength")+
+  labs(y="# of overlaps with Reactome", x="Top", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
@@ -266,7 +264,7 @@ string_count_unfil
 string_count_true_unfil <- ggplot()+
   geom_bar(data=inflation_unfil_top2, mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of true overlaps with Reactome", x="Top", fill="Method", title="Correlation strength")+
+  labs(y="# of true overlaps with Reactome", x="Top", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),
@@ -323,11 +321,11 @@ overlap_prec_overlap_p$Method <- recode(overlap_prec_overlap_p$Method,
                                        sct="sctransform", prn="Pearson", spr="Spearman",
                                        propr="propr",ana_prn="Analytic PR",cscore_p="CS-CORE",
                                        noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
-p_prec_string_p <- ggplot(overlap_prec_overlap_p, aes(x=Overlap, y=Precision, color=Method))+
+p_prec_string_p <- ggplot(overlap_prec_overlap_p[overlap_prec_overlap_p$Method!="CS-CORE",], aes(x=Overlap, y=Precision, color=Method))+
   geom_point()+ geom_line(size=1)+ylim(c(0.2,1))+theme_bw()+
   # geom_errorbar(aes(ymin = min, ymax = max),width=500)+
   scale_colour_manual(values = color_setting)+
-  labs(title="P-value", x="Overlaps with Reactome", y="Precision", shape="P-value cutoff")+
+  labs(x="Overlaps with Reactome", y="Precision", shape="P-value cutoff")+
   theme(plot.title = element_text(hjust=0.5),plot.subtitle = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
 p_prec_string_p
@@ -338,9 +336,9 @@ inflation_p$Var1 <- recode(inflation_p$Var1,
                                  sct="sctransform", prn="Pearson", spr="Spearman",
                                  propr="propr",ana_prn="Analytic PR",cscore_p="CS-CORE",
                                  noise="Noise \nRegularization", cscore_est="CS-CORE \n(Empirical)")
-string_infla_p <- ggplot(inflation_p, aes(x=Var2, y=Freq, color=Var1, group=Var1))+
+string_infla_p <- ggplot(inflation_p[inflation_p$Var1!="CS-CORE",], aes(x=Var2, y=Freq, color=Var1, group=Var1))+
   geom_point()+geom_line(size=1)+
-  labs(y="Prop of misidentified overlaps", x="P-value cutoffs", color="Method",  title="P-value")+
+  labs(y="Prop of misidentified overlaps", x="P-value cutoffs", color="Method")+
   theme_bw()+scale_color_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),plot.subtitle = element_text(hjust=0.5),
         axis.text.x = element_text(angle = 45, hjust = 1))
@@ -365,9 +363,9 @@ inflation_p2$Var1 <- factor(inflation_p2$Var1, levels = unique(inflation_p1_sub$
 
 
 string_count_p <- ggplot()+
-  geom_bar(data=inflation_p1, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_p1[inflation_p1$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of overlaps with Reactome", x="P-value cutoffs", fill="Method", title="P-value")+
+  labs(y="# of overlaps with Reactome", x="P-value cutoffs", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),plot.subtitle = element_text(hjust=0.5),
@@ -375,9 +373,9 @@ string_count_p <- ggplot()+
 string_count_p
 
 string_count_true_p <- ggplot()+
-  geom_bar(data=inflation_p2, mapping=aes(x=Var2, y=Freq, fill=Var1),
+  geom_bar(data=inflation_p2[inflation_p2$Var1!="CS-CORE",], mapping=aes(x=Var2, y=Freq, fill=Var1),
            stat = "identity",position=position_dodge())+
-  labs(y="# of true overlaps with Reactome", x="P-value cutoffs", fill="Method", title="P-value")+
+  labs(y="# of true overlaps with Reactome", x="P-value cutoffs", fill="Method")+
   theme_bw()+
   scale_fill_manual(values = color_setting)+
   theme(plot.title = element_text(hjust=0.5),plot.subtitle = element_text(hjust=0.5),
@@ -386,26 +384,43 @@ string_count_true_p
 
 format_supp <- theme(text = element_text(size = 14),
                      legend.position="none")
-leg <- get_legend(string_count_p+
-                    scale_fill_manual(values = color_setting,
-                                      breaks = sort(names(color_setting)),
-                                      labels = c("Analytic PR", "CS-CORE", "CS-CORE (Empirical)", "Noise Regularization",
-                                                 "Pearson", "propr", "sctransform", "Spearman"))+
-                    theme(legend.position = "bottom",
-                          text = element_text(size = 17),
-                          legend.spacing.x = unit(0.5, 'cm'))+
-                    guides(fill=guide_legend(nrow=2,byrow=TRUE)))
+plot_rep_ori1 <- ggarrange(string_count_unfil+format_supp+labs(y="# of overlaps with \nReactome"), 
+                           p_prec_string_unfil+format_supp,
+                             string_count_true_unfil+format_supp+labs(y="# of true overlaps \nwith Reactome"),
+                             string_infla_unfil+format_supp+ylim(0,0.5)+labs(y="Prop of \nmisidentified overlaps"), ncol=4,nrow=1,
+                          widths = c(1, 0.95, 1, 1),
+          labels = c("A", "B", "C", "D"))
+fig1 = annotate_figure(ggarrange(plot_rep_ori1, ncol=1, nrow=1),
+  top = text_grob("Correlation strength", 
+                  color = "black", face = "bold", size = 16))
 
-plot_string_ori <- ggarrange(string_count_unfil+format_supp, p_prec_string_unfil+format_supp,
-                             string_count_true_unfil+format_supp,
-                             string_infla_unfil+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"),
-                             string_count_p+format_supp,p_prec_string_p+format_supp,
-                             string_count_true_p+format_supp,
-                             string_infla_p+format_supp+ylim(0,0.5)+labs(y="Prop of misidentified overlaps"), ncol=4,nrow=2,
-                             widths = c(1, 0.95, 1, 0.95),labels = c("A", "B", "C", "D", "E", "F", "G", "H"))
-pdf('mean_cor/semi_PD_sparse/figures/reactome_v2.pdf', width = 12.4, height = 8.3, onefile = T)
-ggarrange(plot_string_ori, leg, ncol=1, nrow=2, heights = c(10,1))
+plot_rep_ori2 <- ggarrange(string_count_p+format_supp+labs(y="# of overlaps with \nReactome"),
+                           p_prec_string_p+format_supp,
+                             string_count_true_p+format_supp+labs(y="# of true overlaps \nwith Reactome"),
+                             string_infla_p+format_supp+ylim(0,0.5)+labs(y="Prop of \nmisidentified overlaps"), ncol=4,nrow=1,
+                          widths = c(1, 0.95, 1, 1),
+          labels = c("E", "F", "G", "H"))
+fig2 = annotate_figure(ggarrange(plot_rep_ori2, ncol=1, nrow=1),
+  top = text_grob("---------------------------------------------------------------------------------------------------\nP value", 
+                  color = "black", face = "bold", size = 16))
+
+p_with_legend = string_count_p+
+                    scale_fill_manual(values = color_setting,
+                                       breaks = sort(names(color_setting)),
+                                       labels = c("Analytic PR", "CS-CORE", "CS-CORE (Empirical)", "Noise Regularization",
+                                                  "Pearson", "propr", "sctransform", "Spearman"))+
+                    theme(legend.position = "bottom",
+                           text = element_text(size = 17),
+                           legend.spacing.x = unit(0.5, 'cm'))+
+                    guides(fill=guide_legend(nrow=2,byrow=TRUE))
+g <- ggplotGrob(p_with_legend)
+legend_index <- which(sapply(g$grobs, function(x) x$name) == "guide-box")
+leg <- g$grobs[[legend_index]]
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/reactome_v2_new.pdf', width = 12.4, height = 7, onefile = T)
+ggarrange(fig1, fig2, leg, ncol=1, nrow=3, heights = c(5,5.1,1))
 dev.off()
+
+
 
 
 # fixed mis prop
@@ -533,34 +548,39 @@ string_p_ls[["CS-CORE \n(Empirical)"]] <- string_p_ls[["CS-CORE \n(Empirical)"]]
 ggarrange(plotlist = string_p_ls, nrow=2, ncol=4, common.legend = T, legend = "bottom")
 
 plots <- string_p_ls
-legend <- get_legend(plots[[1]]+theme(text = element_text(size = 17)))
-adjusted_theme <- theme(legend.position = "none",text = element_text(size = 15),
-                        plot.title = element_text(hjust=0.5),
+p_with_legend2 = plots[[1]]+theme(text = element_text(size = 17))
+g2 <- ggplotGrob(p_with_legend2)
+legend_index2 <- which(sapply(g2$grobs, function(x) x$name) == "guide-box")
+legend <- g2$grobs[[legend_index2]]
+
+adjusted_theme <- theme(legend.position = "none",text = element_text(size = 14),
+                        plot.title = element_text(size=14, hjust=0.5),
                         axis.text.x = element_text(angle = 45, hjust = 1),
                         plot.tag = element_text(size = 14, face = "bold", vjust = 1.3, hjust = -1.5),
                         plot.tag.position = c(0,1),
                         plot.margin = unit(c(0, 0.15, 0, 0), "cm"))
+
 plot_grid <- plot_grid(
   plots[[6]] + adjusted_theme +labs(tag="A"),
-  plots[[8]] +adjusted_theme+labs(tag="B"),
-  plots[[5]] + adjusted_theme+labs(tag="C"),
-  plots[[7]] + adjusted_theme+labs(tag="D"),
-  plots[[2]] + adjusted_theme+labs(tag="E"),
-  plots[[4]] + adjusted_theme+labs(tag="F"),
-  plots[[1]] + adjusted_theme+labs(tag="G"),
-  plots[[3]] + adjusted_theme+labs(tag="H"),
-  ncol = 4, nrow = 2, align = "hv"
+  # plots[[8]] +adjusted_theme+labs(tag="B"),
+  plots[[5]] + adjusted_theme+labs(tag="B"),
+  plots[[7]] + adjusted_theme+labs(tag="C"),
+  plots[[2]] + adjusted_theme+labs(tag="D"),
+  plots[[4]] + adjusted_theme+labs(tag="E"),
+  plots[[1]] + adjusted_theme+labs(tag="F"),
+  plots[[3]] + adjusted_theme+labs(tag="G"),
+  ncol = 7, nrow = 1, align = "hv"
 )
 
 final_plot_with_labels <- ggdraw() +
-  draw_plot(plot_grid, 0.02, 0.09, 0.98, 0.9, hjust = 0) +
-  draw_label("Prop of misidentified overlaps", x = 0.51, y = 0.08, vjust = -0.5, angle = 0, size = 15) +
-  draw_label("# of true overlaps with Reactome", x = 0, y = 0.55, vjust = 1.5, angle = 90, size = 15) +
+  draw_plot(plot_grid, 0.04, 0.14, 0.95, 0.8, hjust = 0) +
+  draw_label("Prop of misidentified overlaps", x = 0.51, y = 0.11, vjust = -0.5, angle = 0, size = 15) +
+  draw_label("# of true overlaps with \nReactome", x = 0, y = 0.55, vjust = 1.5, angle = 90, size = 15) +
   draw_plot(legend, 0, 0, 1, 0.1)
 
 # Print the final plot
 print(final_plot_with_labels)
 
-pdf('mean_cor/semi_PD_sparse/figures/compare_reactome_v2.pdf', width = 11, height = 7, onefile = T)
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/compare_reactome_v2_new.pdf', width = 13, height = 3, onefile = T)
 print(final_plot_with_labels)
 dev.off()

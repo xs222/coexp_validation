@@ -6,10 +6,10 @@
 # this is the corresponding ind simulation of /gpfs/gibbs/pi/zhao/xs282/validation/mean_cor/NB_simu_PNAS_and_ROSMAP_NC_Ex_11_13_2023.R
 
 setwd("/gpfs/gibbs/pi/zhao/xs282/validation/")
-source("compare_simulation/NB_copula/NB_copula_function.R")
-source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/coexp_function.R")
+source("AFinal/NB_copula_function.R")
+source("AFinal/CscoreSimplifiedIRLS.R")
+source("AFinal/cscore_real_data_function.R")
+source("AFinal/coexp_function.R")
 
 library(pheatmap)
 library(Seurat)
