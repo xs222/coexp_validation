@@ -53,7 +53,7 @@ km5 <- ksmooth(marginal_fit_PNAS_sel$mu, marginal_fit_PNAS_sel$alpha,
                kernel="normal", bandwidth = bw.SJ(marginal_fit_PNAS_sel$mu)*5)
 
 # simulate
-source("compare_simulation/NB_copula/NB_copula_function.R")
+source("AFinal/NB_copula_function.R")
 log10mu <- vanilla$mu
 gene_name <- vanilla$gene
 names(log10mu) <- gene_name

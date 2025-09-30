@@ -88,7 +88,7 @@ km5 <- ksmooth(marginal_fit_PNAS_sel$mu, marginal_fit_PNAS_sel$alpha,
                kernel="normal", bandwidth = bw.SJ(marginal_fit_PNAS_sel$mu)*5)
 
 # simulate
-source("compare_simulation/NB_copula/NB_copula_function.R")
+source("AFinal/NB_copula_function.R")
 log10mu <- vanilla$mu
 gene_name <- vanilla$gene
 names(log10mu) <- gene_name
@@ -112,8 +112,8 @@ ncor_gene <- 1000
 vanilla <- vanilla[order(vanilla$mu, decreasing = T),]
 cor_gene_name <- vanilla$gene[1:ncor_gene]
 
-source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+source("AFinal/CscoreSimplifiedIRLS.R")
+source("AFinal/cscore_real_data_function.R")
 cor_ests <- CscoreSimplifiedIRLS(ori_ct[cor_gene_name,] %>% as.matrix %>% t,
                                  colSums(ori_ct), covar_weight="regularized")
 cor_ests$est <- post_process_est(cor_ests$est)

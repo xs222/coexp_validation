@@ -86,7 +86,6 @@ ks_result <- rbind(ks_result, ks_result_ind)
 kde_mean_across_data <- kde_result %>% group_by(variable, simu_method) %>%
   summarise(mean_norm=mean(Norm))
 kde_mean_across_data$simu_method[kde_mean_across_data$simu_method=="scDesign3"] <- "   scDesign3"
-kde_mean_across_data <- kde_mean_across_data[!(kde_mean_across_data$variable %in% c("cell_knn", "cell_distance")),]
 mean_order_kde <- kde_mean_across_data %>% group_by(simu_method) %>%
   summarise(mean(mean_norm))
 mean_order_kde <- mean_order_kde[order(mean_order_kde$`mean(mean_norm)`),]
@@ -106,7 +105,6 @@ kde_mean_across_data$simu_method <- recode(kde_mean_across_data$simu_method, NB=
 ks_mean_across_data <- ks_result %>% group_by(variable, simu_method) %>%
   summarise(mean_norm=mean(Norm))
 ks_mean_across_data$simu_method[ks_mean_across_data$simu_method=="scDesign3"] <- "   scDesign3"
-ks_mean_across_data <- ks_mean_across_data[!(ks_mean_across_data$variable %in% c("cell_knn", "cell_distance")),]
 mean_order_ks <- ks_mean_across_data %>% group_by(simu_method) %>%
   summarise(mean(mean_norm))
 mean_order_ks <- mean_order_ks[order(mean_order_ks$`mean(mean_norm)`),]
@@ -130,7 +128,6 @@ kde_ks_mean_across_data$simu_method[kde_ks_mean_across_data$simu_method=="scDesi
 kde_ks_mean_across_data$Norm <- (kde_ks_mean_across_data$Norm.x+kde_ks_mean_across_data$Norm.y)/2
 kde_ks_mean_across_data <- kde_ks_mean_across_data %>% group_by(variable, simu_method) %>%
   summarise(mean_norm=mean(Norm))
-kde_ks_mean_across_data <- kde_ks_mean_across_data[!(kde_ks_mean_across_data$variable %in% c("cell_knn", "cell_distance")),]
 mean_order_ks <- kde_ks_mean_across_data %>% group_by(simu_method) %>%
   summarise(mean(mean_norm))
 mean_order_ks <- mean_order_ks[order(mean_order_ks$`mean(mean_norm)`),]

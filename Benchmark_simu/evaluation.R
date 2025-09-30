@@ -59,8 +59,8 @@ eval_fun <- function(ct){
 
   # gene-gene correlation
   print("gene_cor")
-  source("/gpfs/gibbs/pi/zhao/xs282/coexp-sc/IRLS_CSCORE/CscoreSimplifiedIRLS.R")
-  source("/gpfs/gibbs/pi/zhao/xs282/validation/cscore_real_data_function.R")
+  source("AFinal/CscoreSimplifiedIRLS.R")
+  source("AFinal/cscore_real_data_function.R")
   genes_selected <- names(sort(eval_metrics[["gene_mean"]], decreasing = T))[1:1000]
   NB_ests <- CscoreSimplifiedIRLS(GetAssayData(sc.obj, layer = "counts")[genes_selected,] %>% as.matrix %>% t,
                                   colSums(GetAssayData(sc.obj, layer = "counts")), covar_weight="regularized")
@@ -68,26 +68,7 @@ eval_fun <- function(ct){
   filtered_NB_ests <- NB_ests$est
   filtered_NB_ests[MatrixBH(NB_ests$p_value) > 0.05] <- 0
   eval_metrics[["gene_cor"]] <- filtered_NB_ests[upper.tri(filtered_NB_ests)]
-
-
-  # pcd: cell-to-cell distance (in PCA space)
-  # https://github.com/HelenaLC/simulation-comparison/blob/master/code/05-calc_qc-cell_pcd.R
-  print("pcd")
-  sce <- logNormCounts(sce)
-  stats <- modelGeneVar(sce)
-  hvgs <- getTopHVGs(stats, n = 500)
-  sce <- runPCA(sce, subset_row = hvgs)
-  pca <- reducedDim(sce, "PCA")
-  eval_metrics[["cell_distance"]] <- c(dist(pca, upper = TRUE))
-
-  # knn: number of KNN occurrences
-  # https://github.com/HelenaLC/simulation-comparison/blob/master/code/05-calc_qc-cell_knn.R
-  print("knn")
-  k <- round(0.05*ncol(sce)) # (where k = 5% of cells)
-  knn <- nn2(pca, k = k+1)
-  idx <- knn$nn.idx[, seq(2, k+1)]
-  eval_metrics[["cell_knn"]] <- vapply(seq(ncol(sce)), function(i) sum(idx == i), numeric(1))
-
+    
   return(eval_metrics)
 }
 

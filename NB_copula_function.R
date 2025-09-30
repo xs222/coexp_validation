@@ -31,7 +31,7 @@ NB_copula <- function(mu, gene_name, seq_depth, cell_name,
   beta <- mu/alpha
 
   ###### generate independent expression matrix based on gamma(alpha, beta) ######
-  exp_mat <- matrix(rgamma(ngene*ncell, shape = rep(alpha,ncell),
+  exp_mat <- matrix(rgamma(as.numeric(ngene)*ncell, shape = rep(alpha,ncell),
                            scale = rep(beta,ncell)), nrow = ngene)
   colnames(exp_mat) <- cell_name
   rownames(exp_mat) <- gene_name
@@ -59,7 +59,7 @@ NB_copula <- function(mu, gene_name, seq_depth, cell_name,
   ################ generate count matrix by draw from poisson ####################
   seq_depth_matrix <- matrix(seq_depth, nrow = ngene, ncol = ncell, byrow = T)
   pois_para <- exp_mat*seq_depth_matrix
-  count_mat <- matrix(rpois(ngene*ncell, lambda = c(pois_para)), nrow=ngene)
+  count_mat <- matrix(rpois(as.numeric(ngene)*ncell, lambda = c(pois_para)), nrow=ngene)
   colnames(count_mat) <- cell_name
   rownames(count_mat) <- gene_name
   return(count_mat)

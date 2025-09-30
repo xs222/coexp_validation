@@ -30,7 +30,7 @@ if(!file.exists(path)){
 
 # permutation -------------------------------------------------------------------
 print("permutation ----------------------------------------------------------------------------")
-source("/gpfs/gibbs/pi/zhao/xs282/validation/permutation_our/permute_our_function.R")
+source("AFinal/permute_our_function.R")
 set.seed(1162024)
 permu_start_time <- Sys.time()
 perm_count <- permute_our(t(ori_ct), colSums(ori_ct), seed=10232023)

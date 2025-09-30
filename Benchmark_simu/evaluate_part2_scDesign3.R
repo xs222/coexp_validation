@@ -23,7 +23,7 @@ ori_dist <- readRDS(paste0("compare_simulation/compare_simu_multi_data/evaluatio
 
 simu_method <- c("scDesign3")
 eval_metrics <- c("gene_mean", "gene_var", "gene_cv", "gene_frq_zero", "cell_frq_zero",
-                  "lib_size", "cell_cor", "gene_cor", "cell_distance", "cell_knn")
+                  "lib_size", "cell_cor", "gene_cor")
 
 kde_stat <- matrix(nrow=length(simu_method), ncol=length(eval_metrics))
 rownames(kde_stat) <- simu_method
