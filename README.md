@@ -1,5 +1,5 @@
 # A Unified Framework for Selecting and Evaluating Cell-Type-Specific Gene Co-expressions in Single-Cell Data
-Shan, X., Zhao, H.: A Unified Framework for Selecting and Evaluating Cell-Type-Specific Gene Co-expressions in Single-Cell Data.
+Shan, X., Lin, Y., Zhao, H.: A Unified Framework for Selecting and Evaluating Cell-Type-Specific Gene Co-expressions in Single-Cell Data.
 
 ## Benchmark of simulation
 
@@ -69,6 +69,7 @@ Shan, X., Zhao, H.: A Unified Framework for Selecting and Evaluating Cell-Type-S
         * Simulate IND data: Real_data/Ex/NB_simu_IND_ROSMAP_NC_Ex.R
         * Empirical p: Real_data/Ex/norm_p_value_ROSMAP_NC_Ex.R
     * Estimate shared GO terms: Real_data/Ex/identify_cor_ex_v2.R
+    * Clustering analysis: Real_data/Ex/case_study.R
 
 2. Oligodendrocytes
      * Estimate empirical p-values:
@@ -116,6 +117,11 @@ Shan, X., Zhao, H.: A Unified Framework for Selecting and Evaluating Cell-Type-S
     * Benchmark_simu/comparison_scSimu_cscoreSimu.r
 * Use simulated data to show the inherent expression bias in estimation methods:
     * Randomness_bias/inherent_methods_bias.R
+* Robustness of stratification
+    * Randomness_bias/robustness_stratification_lung_NC_monocyte.r
+* Scalability of empirical p-value estimation
+    * Simulation/scalability.r
+    * Simulation/scalability_plot.r
 
 
 
