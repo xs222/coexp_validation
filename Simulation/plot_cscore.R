@@ -189,7 +189,7 @@ inflation_p2$Var1 <- recode(inflation_p2$Var1,
 format_supp <- theme(text = element_text(size = 14),
                      legend.position="none")
 repduc_prec_overlap_p_sub = repduc_prec_overlap_p[repduc_prec_overlap_p$Method=="CS-CORE",]
-repduc_scaling_factor_overlap_p <- max(repduc_prec_overlap_p_sub$Reproduce) 
+repduc_scaling_factor_overlap_p <- max(repduc_prec_overlap_p_sub$Reproduce)
 p_repduc_prec_overlap_p_cscore = ggplot(repduc_prec_overlap_p_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = ROSMAP * repduc_scaling_factor_overlap_p), color = "darkred", size = 1.5) +
@@ -228,7 +228,7 @@ repduc_inflation_p_cscore = inflation_p
 colnames(repduc_inflation_p_cscore)[3] = "infla"
 repduc_inflation_p_cscore = left_join(repduc_inflation_p_cscore, inflation_p2, by=c("Var1", "Var2"))
 repduc_inflation_p_cscore = repduc_inflation_p_cscore[repduc_inflation_p_cscore$Var1=="CS-CORE",]
-repduc_scaling_factor_infla_p <- max(repduc_inflation_p_cscore$Freq) 
+repduc_scaling_factor_infla_p <- max(repduc_inflation_p_cscore$Freq)
 
 p_repduc_infla_p_cscore = ggplot(repduc_inflation_p_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -314,7 +314,7 @@ inflation_unfil_top2$Var1 <- recode(inflation_unfil_top2$Var1,
 
 
 repduc_prec_overlap_sub = repduc_prec_overlap[repduc_prec_overlap$Method=="CS-CORE \n(Empirical)",]
-repduc_scaling_factor_overlap <- max(repduc_prec_overlap_sub$Reproduce) 
+repduc_scaling_factor_overlap <- max(repduc_prec_overlap_sub$Reproduce)
 p_repduc_prec_overlap_cscore = ggplot(repduc_prec_overlap_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Reproduce), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = ROSMAP * repduc_scaling_factor_overlap), color = "darkred", size = 1.5) +
@@ -347,13 +347,13 @@ p_repduc_prec_overlap_cscore_PNAS = ggplot(repduc_prec_overlap_sub, aes(x = as.f
     plot.title = element_text(hjust=0.5),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )+format_supp
-p_repduc_prec_overlap_cscore_PNAS    
+p_repduc_prec_overlap_cscore_PNAS
 
 repduc_inflation_cscore = inflation_unfil_top
 colnames(repduc_inflation_cscore)[3] = "infla"
 repduc_inflation_cscore = left_join(repduc_inflation_cscore, inflation_unfil_top2, by=c("Var1", "Var2"))
 repduc_inflation_cscore = repduc_inflation_cscore[repduc_inflation_cscore$Var1=="CS-CORE \n(Empirical)",]
-repduc_scaling_factor_infla <- max(repduc_inflation_cscore$Freq) 
+repduc_scaling_factor_infla <- max(repduc_inflation_cscore$Freq)
 
 p_repduc_infla_cscore = ggplot(repduc_inflation_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -428,7 +428,7 @@ inflation_p$true <- repduc_p_long$Reproduce
 
 
 # based on the unfiltered order instead of the gene cor-------------------------
-top_cutoff <- sort(c(seq(1000, 10000, by=1000), 20000,25000,30000,35000,40000,45000,50000))
+top_cutoff <- sort(c(seq(1000, 10000, by=2000), 20000,25000,30000,35000,40000,45000,50000))
 repduc_top <- matrix(NA, nrow=7, ncol=length(top_cutoff))
 rownames(repduc_top) <- colnames(ROSMAP_est)
 colnames(repduc_top) <- top_cutoff
@@ -745,7 +745,7 @@ inflation_p2$Var1 <- recode(inflation_p2$Var1,
 format_supp <- theme(text = element_text(size = 14),
                      legend.position="none")
 string_prec_overlap_p_sub = overlap_prec_overlap_p[overlap_prec_overlap_p$Method=="CS-CORE",]
-string_scaling_factor_overlap_p <- max(string_prec_overlap_p_sub$Overlap) 
+string_scaling_factor_overlap_p <- max(string_prec_overlap_p_sub$Overlap)
 p_string_prec_overlap_p_cscore = ggplot(string_prec_overlap_p_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Overlap), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = Precision * string_scaling_factor_overlap_p), color = "darkred", size = 1.5) +
@@ -767,7 +767,7 @@ string_inflation_p_cscore = inflation_p
 colnames(string_inflation_p_cscore)[3] = "infla"
 string_inflation_p_cscore = left_join(string_inflation_p_cscore, inflation_p2, by=c("Var1", "Var2"))
 string_inflation_p_cscore = string_inflation_p_cscore[string_inflation_p_cscore$Var1=="CS-CORE",]
-string_scaling_factor_infla_p <- max(string_inflation_p_cscore$Freq) 
+string_scaling_factor_infla_p <- max(string_inflation_p_cscore$Freq)
 
 p_string_infla_p_cscore = ggplot(string_inflation_p_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -788,7 +788,7 @@ p_string_infla_p_cscore
 
 
 string_prec_overlap_sub = overlap_prec_overlap[overlap_prec_overlap$Method=="CS-CORE \n(Empirical)",]
-string_scaling_factor_overlap <- max(string_prec_overlap_sub$Overlap) 
+string_scaling_factor_overlap <- max(string_prec_overlap_sub$Overlap)
 p_string_prec_overlap_cscore = ggplot(string_prec_overlap_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Overlap), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = Precision * string_scaling_factor_overlap), color = "darkred", size = 1.5) +
@@ -810,7 +810,7 @@ string_inflation_cscore = inflation_unfil_top
 colnames(string_inflation_cscore)[3] = "infla"
 string_inflation_cscore = left_join(string_inflation_cscore, inflation_unfil_top2, by=c("Var1", "Var2"))
 string_inflation_cscore = string_inflation_cscore[string_inflation_cscore$Var1=="CS-CORE \n(Empirical)",]
-string_scaling_factor_infla <- max(string_inflation_cscore$Freq) 
+string_scaling_factor_infla <- max(string_inflation_cscore$Freq)
 
 p_string_infla_cscore = ggplot(string_inflation_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -832,7 +832,7 @@ p_string_infla_cscore
 
 # fixed mis prop-------------------------------------------------------------------
 ## overlap with biological network with different top threshold -----------------
-top_cutoff <- sort(c(seq(1000, 10000, by=1000), 20000,25000,30000,35000,40000,45000,50000))
+top_cutoff <- sort(c(seq(1000, 10000, by=2000), 20000,25000,30000,35000,40000,45000,50000))
 overlap_string <- matrix(NA, ncol = length(top_cutoff), nrow=7)
 colnames(overlap_string) <- top_cutoff
 rownames(overlap_string) <- colnames(ROSMAP_p)
@@ -944,15 +944,15 @@ fix_mis_cscore_string <- ggplot(plot_dat_string, aes(x=Mis, y=true, color=group)
 fix_mis_cscore_string
 
 plot_string_ori <- ggarrange(p_string_prec_overlap_cscore, p_string_prec_overlap_p_cscore,
-                             p_string_infla_cscore, 
+                             p_string_infla_cscore,
                              p_string_infla_p_cscore, fix_mis_cscore_string, ncol=5,nrow=1,
                           widths = c(1, 0.9, 1, 0.9,0.8),
           labels = c("F", "G", "H", "I","J"))
 p_string = annotate_figure(ggarrange(plot_string_ori, ncol=1, nrow=1),
-  top = text_grob("-------------------------------------------------------------------------------------------------------\nOverlap with STRING", 
+  top = text_grob("-------------------------------------------------------------------------------------------------------\nOverlap with STRING",
                   color = "black", face = "bold", size = 16))
 
-pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/plot_cscore.pdf', width = 14, height = 8, onefile = T)
+pdf('/gpfs/gibbs/pi/zhao/xs282/validation/BIB_R1/modify_plot/plot_cscore.pdf', width = 14, height = 8, onefile = T)
 ggarrange(p_reproduce, p_string, ncol=1, nrow=2, heights = c(5,5.5))
 dev.off()
 
@@ -1092,7 +1092,7 @@ inflation_p2$Var1 <- recode(inflation_p2$Var1,
 format_supp <- theme(text = element_text(size = 14),
                      legend.position="none")
 reactome_prec_overlap_p_sub = overlap_prec_overlap_p[overlap_prec_overlap_p$Method=="CS-CORE",]
-reactome_scaling_factor_overlap_p <- max(reactome_prec_overlap_p_sub$Overlap) 
+reactome_scaling_factor_overlap_p <- max(reactome_prec_overlap_p_sub$Overlap)
 p_reactome_prec_overlap_p_cscore = ggplot(reactome_prec_overlap_p_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Overlap), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = Precision * reactome_scaling_factor_overlap_p), color = "darkred", size = 1.5) +
@@ -1114,7 +1114,7 @@ reactome_inflation_p_cscore = inflation_p
 colnames(reactome_inflation_p_cscore)[3] = "infla"
 reactome_inflation_p_cscore = left_join(reactome_inflation_p_cscore, inflation_p2, by=c("Var1", "Var2"))
 reactome_inflation_p_cscore = reactome_inflation_p_cscore[reactome_inflation_p_cscore$Var1=="CS-CORE",]
-reactome_scaling_factor_infla_p <- max(reactome_inflation_p_cscore$Freq) 
+reactome_scaling_factor_infla_p <- max(reactome_inflation_p_cscore$Freq)
 
 p_reactome_infla_p_cscore = ggplot(reactome_inflation_p_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -1135,7 +1135,7 @@ p_reactome_infla_p_cscore
 
 
 reactome_prec_overlap_sub = overlap_prec_overlap[overlap_prec_overlap$Method=="CS-CORE \n(Empirical)",]
-reactome_scaling_factor_overlap <- max(reactome_prec_overlap_sub$Overlap) 
+reactome_scaling_factor_overlap <- max(reactome_prec_overlap_sub$Overlap)
 p_reactome_prec_overlap_cscore = ggplot(reactome_prec_overlap_sub, aes(x = as.factor(Top), group = 1)) +
   geom_col(aes(y = Overlap), fill = "darkblue", alpha = 0.7) +
   geom_line(aes(y = Precision * reactome_scaling_factor_overlap), color = "darkred", size = 1.5) +
@@ -1157,7 +1157,7 @@ reactome_inflation_cscore = inflation_unfil_top
 colnames(reactome_inflation_cscore)[3] = "infla"
 reactome_inflation_cscore = left_join(reactome_inflation_cscore, inflation_unfil_top2, by=c("Var1", "Var2"))
 reactome_inflation_cscore = reactome_inflation_cscore[reactome_inflation_cscore$Var1=="CS-CORE \n(Empirical)",]
-reactome_scaling_factor_infla <- max(reactome_inflation_cscore$Freq) 
+reactome_scaling_factor_infla <- max(reactome_inflation_cscore$Freq)
 
 p_reactome_infla_cscore = ggplot(reactome_inflation_cscore, aes(x = Var2, group = 1)) +
   geom_col(aes(y = Freq), fill = "darkblue", alpha = 0.7) +
@@ -1289,12 +1289,12 @@ fix_mis_cscore_reactome <- ggplot(plot_dat_reactome, aes(x=Mis, y=true, color=gr
 fix_mis_cscore_reactome
 
 plot_reactome_ori <- ggarrange(p_reactome_prec_overlap_cscore, p_reactome_prec_overlap_p_cscore,
-                             p_reactome_infla_cscore, 
+                             p_reactome_infla_cscore,
                              p_reactome_infla_p_cscore, fix_mis_cscore_reactome+xlim(0,0.1), ncol=5,nrow=1,
                           widths = c(1, 0.9, 1, 0.9,0.8),
           labels = c("A", "B", "C", "D","E"))
 p_reactome = annotate_figure(ggarrange(plot_reactome_ori, ncol=1, nrow=1),
-  top = text_grob("Overlap with reactome", 
+  top = text_grob("Overlap with reactome",
                   color = "black", face = "bold", size = 16))
 
 pdf('/gpfs/gibbs/pi/zhao/xs282/validation/revision/modify_plot/plot_cscore_reactome.pdf', width = 14, height = 4, onefile = T)

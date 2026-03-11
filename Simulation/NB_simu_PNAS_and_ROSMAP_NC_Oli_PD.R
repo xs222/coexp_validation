@@ -39,6 +39,16 @@ alpha <- 10^log10alpha
 
 # use correlation from SCT
 ori_ests <- readRDS("mean_cor/semi_PD/simu/ROSMAP_NC_Oli_sct1000.rds")
+
+val = seq(0.01,0.1, by=0.001)
+is_psd = c()
+for (i in val){
+  cor_mat <- ori_ests
+  cor_mat[abs(cor_mat)<i] <- 0
+  is_psd = c(is_psd, is.positive.semi.definite(cor_mat))
+}
+val[is_psd]
+
 cor_mat <- ori_ests
 cor_mat[abs(cor_mat)<0.015] <- 0
 is.positive.semi.definite(cor_mat)
@@ -75,6 +85,16 @@ for (i in 1:nrow(vanilla_ex)){
 alpha <- 10^log10alpha
 
 ori_ests <- readRDS("mean_cor/semi_PD/simu/PNAS_NC_Oli_sct1000.rds")
+val = seq(0.01,0.1, by=0.001)
+is_psd = c()
+for (i in val){
+  cor_mat <- ori_ests
+  cor_mat[abs(cor_mat)<i] <- 0
+  is_psd = c(is_psd, is.positive.semi.definite(cor_mat))
+}
+val[is_psd]
+
+
 cor_mat <- ori_ests
 cor_mat[abs(cor_mat)<0.017] <- 0
 is.positive.semi.definite(cor_mat)

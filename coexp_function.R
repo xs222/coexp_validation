@@ -5,11 +5,23 @@ sct_cor <- function(sc_obj, sc.sel, sel.gene){
                         residual.features = sel.gene,return.only.var.genes = F)
 
   SCT_scaled_res <- sc.sct[["SCT"]]@scale.data
-  SCT_scaled_res <- SCT_scaled_res[match(sel.gene, rownames(SCT_scaled_res)),]
-  all(rownames(SCT_scaled_res) == sel.gene)
+  sel.gene.sub = sel.gene[sel.gene %in% rownames(SCT_scaled_res)]
+  SCT_scaled_res <- SCT_scaled_res[match(sel.gene.sub, rownames(SCT_scaled_res)),]
+  # rownames(SCT_scaled_res) = sel.gene
+  all(rownames(SCT_scaled_res) == sel.gene.sub)
 
   sct.data <- t(as.matrix(SCT_scaled_res))
   sct_prn <- cor(sct.data, method = "pearson")
+
+  if (length(sel.gene.sub)<length(sel.gene)){
+    n_genes <- length(sel.gene)
+    complete_cor <- matrix(0, nrow = n_genes, ncol = n_genes)
+    rownames(complete_cor) <- colnames(complete_cor) <- sel.gene
+    diag(complete_cor) <- 1
+    complete_cor[sel.gene.sub, sel.gene.sub] <- sct_prn
+    sct_prn = complete_cor
+  }
+
   return(sct_prn)
 }
 
@@ -32,7 +44,8 @@ noise_fun <- function(sc_obj, sc.sel, sel.gene, seed, path2){
                         residual.features = sel.gene,return.only.var.genes = F)
 
   SCT_scaled_res <- sc.sct[["SCT"]]@scale.data
-  SCT_scaled_res <- SCT_scaled_res[match(sel.gene, rownames(SCT_scaled_res)),]
+  sel.gene.sub = sel.gene[sel.gene %in% rownames(SCT_scaled_res)]
+  SCT_scaled_res <- SCT_scaled_res[match(sel.gene.sub, rownames(SCT_scaled_res)),]
 
   sc.sct[["my_cluster"]] <- 1
   meta.data <- sc.sct@meta.data
@@ -88,7 +101,17 @@ noise_fun <- function(sc_obj, sc.sel, sel.gene, seed, path2){
   noise_cor <- spread(cor.df.1p.den, key = gene2, value = spearman)
   noise_cor <- as.data.frame(noise_cor)
   rownames(noise_cor) <- noise_cor[,1]
-  noise_cor <- noise_cor[,-1]
+  noise_cor <- as.matrix(noise_cor[,-1])
+
+  if (length(sel.gene.sub)<length(sel.gene)){
+    n_genes <- length(sel.gene)
+    complete_cor <- matrix(0, nrow = n_genes, ncol = n_genes)
+    rownames(complete_cor) <- colnames(complete_cor) <- sel.gene
+    diag(complete_cor) <- 1
+    complete_cor[sel.gene.sub, sel.gene.sub] <- noise_cor
+    noise_cor = complete_cor
+  }
+
   return(noise_cor)
 }
 
